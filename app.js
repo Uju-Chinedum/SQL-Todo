@@ -4,11 +4,13 @@ const express = require("express");
 
 const sequelize = require("./db/connect");
 const notFound = require("./middleware/notFound");
+const errorHandler = require("./middleware/errorHandler");
 
 const app = express();
 const port = 5000 || process.env.PORT;
 
 app.use(notFound);
+app.use(errorHandler);    
 
 const start = async () => {
   try {
