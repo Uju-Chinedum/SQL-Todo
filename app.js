@@ -10,7 +10,7 @@ const app = express();
 const port = 5000 || process.env.PORT;
 
 app.use(notFound);
-app.use(errorHandler);    
+app.use(errorHandler);
 
 const start = async () => {
   try {
