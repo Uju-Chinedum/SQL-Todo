@@ -5,9 +5,14 @@ const express = require("express");
 const sequelize = require("./db/connect");
 const notFound = require("./middleware/notFound");
 const errorHandler = require("./middleware/errorHandler");
+const authRouter = require("./routes/authRoutes");
 
 const app = express();
 const port = 5000 || process.env.PORT;
+
+app.use(express.json());
+
+app.use("/api/v1/auth", authRouter);
 
 app.use(notFound);
 app.use(errorHandler);
