@@ -16,8 +16,8 @@ const UserSchema = sequelize.define("User", {
     type: Sequelize.STRING,
     allowNull: false,
     set(value) {
-      const salt = bcrypt.genSalt(8);
-      const hash = bcrypt.hash(value, salt);
+      const salt = bcrypt.genSaltSync(8);
+      const hash = bcrypt.hashSync(value, salt);
       this.setDataValue("password", hash);
     },
   },
@@ -32,8 +32,18 @@ const UserSchema = sequelize.define("User", {
     },
   },
   noOfTasks: {
-    type: Sequelize.NUMBER,
-    default: 0,
+    type: Sequelize.INTEGER,
+    defaultValue: 0,
+  },
+  createdAt: {
+    type: Sequelize.DATE,
+    allowNull: false,
+    defaultValue: Sequelize.NOW,
+  },
+  updatedAt: {
+    type: Sequelize.DATE,
+    allowNull: false,
+    defaultValue: Sequelize.NOW,
   },
 });
 
@@ -49,4 +59,4 @@ UserSchema.beforeSave(async (user, options) => {
   user.confirmPassword = null;
 });
 
-module.exports = User;
+module.exports = UserSchema;
