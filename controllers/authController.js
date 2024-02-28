@@ -2,8 +2,8 @@ const { StatusCodes } = require("http-status-codes");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
-const { BadRequest, Unauthenticated } = require("../errors");
-const { where } = require("sequelize");
+const { BadRequest, Unauthenticated, Unauthorized } = require("../errors");
+const { addToBlacklist } = require("../middleware/blacklist");
 
 const register = async (req, res) => {
   const user = await User.create(req.body);
@@ -37,11 +37,25 @@ const login = async (req, res) => {
     expiresIn: process.env.JWT_LIFETIME,
   });
 
-  res.status(StatusCodes.OK).json({ data: { user, token } });
+  res
+    .status(StatusCodes.OK)
+    .json({ data: { user, message: "User logged in successfully", token } });
 };
 
 const logout = async (req, res) => {
-  res.send("Logout");
+  if (!req.user) {
+    throw new Unauthorized(
+      "Not Authorized",
+      "User not authorized to perform this operation"
+    );
+  }
+
+  const token = req.get("Authorization").replace("Bearer ", "");
+  addToBlacklist(token);
+
+  res
+    .status(StatusCodes.OK)
+    .json({ data: { message: "User logged out successfully" } });
 };
 
 module.exports = { register, login, logout };
