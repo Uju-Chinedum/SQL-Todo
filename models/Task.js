@@ -1,5 +1,6 @@
 const { Sequelize } = require("sequelize");
 const sequelize = require("../db/connect");
+const User = require("./user");
 
 const TaskSchema = sequelize.define("Task", {
   task: {

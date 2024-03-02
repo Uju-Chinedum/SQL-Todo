@@ -9,7 +9,7 @@ const xss = require("xss-clean");
 const sequelize = require("./db/connect");
 const notFound = require("./middleware/notFound");
 const errorHandler = require("./middleware/errorHandler");
-const auth = require("../middleware/authentication")
+const auth = require("./middleware/authentication")
 const authRouter = require("./routes/authRoutes");
 const taskRouter = require("./routes/taskRoutes");
 
