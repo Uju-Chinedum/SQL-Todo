@@ -10,6 +10,9 @@ const UserSchema = sequelize.define("User", {
   email: {
     type: Sequelize.STRING,
     allowNull: false,
+    validate: {
+      isEmail: true,
+    },
     unique: true,
   },
   password: {

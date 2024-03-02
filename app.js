@@ -1,9 +1,10 @@
 require("dotenv").config();
 require("express-async-errors");
 const express = require("express");
-const helmet = require("helmet")
-const cors = require("cors")
-const xss = require("xss-clean")
+const morgan = require("morgan");
+const helmet = require("helmet");
+const cors = require("cors");
+const xss = require("xss-clean");
 
 const sequelize = require("./db/connect");
 const notFound = require("./middleware/notFound");
