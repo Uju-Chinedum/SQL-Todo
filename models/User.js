@@ -1,8 +1,6 @@
 const { Sequelize, DataTypes } = require("sequelize");
 const sequelize = require("../db/connect");
 const bcrypt = require("bcryptjs");
-const { v4: uuidv4 } = require("uuid");
-const { BadRequest } = require("../errors");
 
 const UserSchema = sequelize.define("User", {
   id: {
@@ -26,11 +24,6 @@ const UserSchema = sequelize.define("User", {
   password: {
     type: Sequelize.STRING,
     allowNull: false,
-    set(value) {
-      const salt = bcrypt.genSaltSync(8);
-      const hash = bcrypt.hashSync(value, salt);
-      this.setDataValue("password", hash);
-    },
   },
   confirmPassword: {
     type: Sequelize.STRING,
@@ -51,10 +44,6 @@ const UserSchema = sequelize.define("User", {
     defaultValue: Sequelize.NOW,
   },
 });
-
-//UserSchema.beforeCreate(async (user) => {
-  //user.id = uuidv4();
-//});
 
 UserSchema.beforeSave(async (user, options) => {
   if (!user.changed("password")) {

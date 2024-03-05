@@ -7,7 +7,7 @@ const { addToBlacklist } = require("../middleware/blacklist");
 const register = async (req, res) => {
   const { password, confirmPassword } = req.body;
   if (password !== confirmPassword) {
-     throw new BadRequest("Invalid Password", "Passwords do not match");
+    throw new BadRequest("Invalid Password", "Passwords do not match");
   }
 
   const user = await User.create(req.body);

@@ -1,7 +1,6 @@
 const { Sequelize, DataTypes } = require("sequelize");
 const sequelize = require("../db/connect");
-const User = require("./user");
-const { v4: uuidv4 } = require("uuid");
+const User = require("./User");
 
 const TaskSchema = sequelize.define("Task", {
   id: {
