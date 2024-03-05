@@ -3,7 +3,11 @@ const Task = require("../models/Task");
 const { BadRequest, Unauthenticated } = require("../errors");
 
 const createTask = async (req, res) => {
-  res.send("Create new task");
+  req.body.user = req.user.userId;
+
+  const task = await Task.create(req.body);
+
+  res.status(StatusCodes.CREATED).json({ data: { task } });
 };
 
 const getAllTasks = async (req, res) => {
@@ -22,4 +26,10 @@ const deleteTask = async (req, res) => {
   res.send("Delete Task");
 };
 
-module.exports = { createTask, getAllTasks, getSingleTask, updateTask, deleteTask };
+module.exports = {
+  createTask,
+  getAllTasks,
+  getSingleTask,
+  updateTask,
+  deleteTask,
+};
