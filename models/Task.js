@@ -1,8 +1,15 @@
-const { Sequelize } = require("sequelize");
+const { Sequelize, DataTypes } = require("sequelize");
 const sequelize = require("../db/connect");
 const User = require("./user");
+const { v4: uuidv4 } = require("uuid");
 
 const TaskSchema = sequelize.define("Task", {
+  id: {
+    type: DataTypes.UUID,
+    defaultValue: Sequelize.UUIDV4,
+    allowNull: false,
+    primaryKey: true
+  },
   task: {
     type: Sequelize.STRING,
     allowNull: false,
@@ -17,7 +24,7 @@ const TaskSchema = sequelize.define("Task", {
     allowNull: true,
   },
   user: {
-    type: Sequelize.INTEGER,
+    type: DataTypes.UUID,
     allowNull: false,
     references: {
       model: User,

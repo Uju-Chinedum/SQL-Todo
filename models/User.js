@@ -1,8 +1,16 @@
-const { Sequelize } = require("sequelize");
+const { Sequelize, DataTypes } = require("sequelize");
 const sequelize = require("../db/connect");
 const bcrypt = require("bcryptjs");
+const { v4: uuidv4 } = require("uuid");
+const { BadRequest } = require("../errors");
 
 const UserSchema = sequelize.define("User", {
+  id: {
+    type: DataTypes.UUID,
+    defaultValue: Sequelize.UUIDV4,
+    allowNull: false,
+    primaryKey: true
+  },
   fullName: {
     type: Sequelize.STRING,
     allowNull: false,
@@ -26,13 +34,7 @@ const UserSchema = sequelize.define("User", {
   },
   confirmPassword: {
     type: Sequelize.STRING,
-    validate: {
-      notEmpty: true,
-      equals: {
-        validator: (value) => value === this.password,
-        message: "Passwords do not match",
-      },
-    },
+    allowNull: true,
   },
   noOfTasks: {
     type: Sequelize.INTEGER,
@@ -50,6 +52,10 @@ const UserSchema = sequelize.define("User", {
   },
 });
 
+//UserSchema.beforeCreate(async (user) => {
+  //user.id = uuidv4();
+//});
+
 UserSchema.beforeSave(async (user, options) => {
   if (!user.changed("password")) {
     return;
@@ -61,5 +67,9 @@ UserSchema.beforeSave(async (user, options) => {
 
   user.confirmPassword = null;
 });
+
+UserSchema.prototype.comparePassword = async function (candidatePassword) {
+  return await bcrypt.compare(candidatePassword, this.password);
+};
 
 module.exports = UserSchema;

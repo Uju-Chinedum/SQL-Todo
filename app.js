@@ -33,7 +33,7 @@ app.use(errorHandler);
 const start = async () => {
   try {
     await sequelize.authenticate();
-    await sequelize.sync();
+    await sequelize.sync({ alter: true });
     app.listen(port, () => {
       console.log(`Server is listening on port ${port}...`);
     });

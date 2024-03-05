@@ -1,11 +1,15 @@
 const { StatusCodes } = require("http-status-codes");
-const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const { BadRequest, Unauthenticated, Unauthorized } = require("../errors");
 const { addToBlacklist } = require("../middleware/blacklist");
 
 const register = async (req, res) => {
+  const { password, confirmPassword } = req.body;
+  if (password !== confirmPassword) {
+     throw new BadRequest("Invalid Password", "Passwords do not match");
+  }
+
   const user = await User.create(req.body);
 
   res.status(StatusCodes.CREATED).json({ data: { user } });
@@ -28,8 +32,8 @@ const login = async (req, res) => {
     );
   }
 
-  const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) {
+  const isPassword = await user.comparePassword(password);
+  if (!isPassword) {
     throw new Unauthenticated("Invalid Credentials", "Incorrect password");
   }
 
