@@ -43,7 +43,14 @@ const login = async (req, res) => {
 
   res
     .status(StatusCodes.OK)
-    .json({ data: { user, message: "User logged in successfully", token } });
+    .json({
+      data: {
+        statusCode: StatusCodes.OK,
+        user,
+        message: "User logged in successfully",
+        token,
+      },
+    });
 };
 
 const logout = async (req, res) => {
@@ -59,7 +66,12 @@ const logout = async (req, res) => {
 
   res
     .status(StatusCodes.OK)
-    .json({ data: { message: "User logged out successfully" } });
+    .json({
+      data: {
+        statusCode: StatusCodes.OK,
+        message: "User logged out successfully",
+      },
+    });
 };
 
 module.exports = { register, login, logout };
