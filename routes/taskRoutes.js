@@ -11,7 +11,7 @@ const router = express.Router();
 
 router.route("/").post(createTask).get(getAllTasks);
 router
-  .route("/:taskId")
+  .route("/:id")
   .get(getSingleTask)
   .patch(updateTask)
   .delete(deleteTask);
