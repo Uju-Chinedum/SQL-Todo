@@ -38,7 +38,7 @@ const getSingleTask = async (req, res) => {
   const { id: taskId } = req.params;
 
   const task = await Task.findByPk(taskId);
-  if (!task) {  
+  if (!task) {
     throw new NotFound("Task not found", `No task found with ID: ${taskId}`);
   }
 
@@ -48,7 +48,28 @@ const getSingleTask = async (req, res) => {
 };
 
 const updateTask = async (req, res) => {
-  res.send("Update Task");
+  const { id: taskId } = req.params;
+  const task = await Task.findByPk(taskId);
+  if (!task) {
+    throw new NotFound("Task not found", `No task found with ID: ${taskId}`);
+  }
+
+  const { task: name, status, startTime } = req.body;
+  if (!name || !status || startTime === undefined) {
+    throw new BadRequest("Missing Fields", "Please fill all fields");
+  }
+
+  const updateData = { task: name, status, startTime };
+  await task.update(updateData);
+  await task.save();
+
+  res.status(StatusCodes.OK).json({
+    data: {
+      statusCode: StatusCodes.OK,
+      message: "Task updated successfully",
+      task,
+    },
+  });
 };
 
 const deleteTask = async (req, res) => {
