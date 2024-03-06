@@ -12,7 +12,9 @@ const register = async (req, res) => {
 
   const user = await User.create(req.body);
 
-  res.status(StatusCodes.CREATED).json({ data: { user } });
+  res
+    .status(StatusCodes.CREATED)
+    .json({ data: { statusCode: StatusCodes.CREATED, user } });
 };
 
 const login = async (req, res) => {
@@ -41,16 +43,14 @@ const login = async (req, res) => {
     expiresIn: process.env.JWT_LIFETIME,
   });
 
-  res
-    .status(StatusCodes.OK)
-    .json({
-      data: {
-        statusCode: StatusCodes.OK,
-        user,
-        message: "User logged in successfully",
-        token,
-      },
-    });
+  res.status(StatusCodes.OK).json({
+    data: {
+      statusCode: StatusCodes.OK,
+      user,
+      message: "User logged in successfully",
+      token,
+    },
+  });
 };
 
 const logout = async (req, res) => {
@@ -64,14 +64,12 @@ const logout = async (req, res) => {
   const token = req.get("Authorization").replace("Bearer ", "");
   addToBlacklist(token);
 
-  res
-    .status(StatusCodes.OK)
-    .json({
-      data: {
-        statusCode: StatusCodes.OK,
-        message: "User logged out successfully",
-      },
-    });
+  res.status(StatusCodes.OK).json({
+    data: {
+      statusCode: StatusCodes.OK,
+      message: "User logged out successfully",
+    },
+  });
 };
 
 module.exports = { register, login, logout };
