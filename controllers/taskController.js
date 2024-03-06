@@ -1,17 +1,37 @@
 const { StatusCodes } = require("http-status-codes");
+const User = require("../models/User");
 const Task = require("../models/Task");
-const { BadRequest, Unauthenticated } = require("../errors");
+const { NotFound, BadRequest, Unauthenticated } = require("../errors");
 
 const createTask = async (req, res) => {
-  req.body.user = req.user.userId;
+  const { userId } = req.user;
 
+  const user = await User.findByPk(userId);
+  if (!user) {
+    throw new NotFound("User not found", `No user found with ID: ${userId}`);
+  }
+
+  req.body.user = userId;
   const task = await Task.create(req.body);
 
-  res.status(StatusCodes.CREATED).json({ data: { task } });
+  user.update({ noOfTasks: user.noOfTasks + 1 });
+  await user.save();
+
+  res.status(StatusCodes.CREATED).json({
+    data: {
+      statusCode: StatusCodes.CREATED,
+      message: "Task created successfully",
+      task,
+    },
+  });
 };
 
 const getAllTasks = async (req, res) => {
-  res.send("Get All Tasks");
+  const tasks = await Task.findAll({ where: { user: req.user.userId } });
+
+  res.status(StatusCodes.OK).json({
+    data: { statusCode: StatusCodes.OK, tasks, noOfTasks: tasks.length },
+  });
 };
 
 const getSingleTask = async (req, res) => {
