@@ -35,7 +35,16 @@ const getAllTasks = async (req, res) => {
 };
 
 const getSingleTask = async (req, res) => {
-  res.send("Get Single Task");
+  const { id: taskId } = req.params;
+
+  const task = await Task.findByPk(taskId);
+  if (!task) {  
+    throw new NotFound("Task not found", `No task found with ID: ${taskId}`);
+  }
+
+  res.status(StatusCodes.OK).json({
+    data: { statusCode: StatusCodes.OK, task },
+  });
 };
 
 const updateTask = async (req, res) => {
