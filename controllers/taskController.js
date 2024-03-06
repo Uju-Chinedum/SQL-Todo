@@ -1,7 +1,8 @@
 const { StatusCodes } = require("http-status-codes");
 const User = require("../models/User");
 const Task = require("../models/Task");
-const { NotFound, BadRequest, Unauthenticated } = require("../errors");
+const { NotFound, BadRequest } = require("../errors");
+const { checkPermissions } = require("../utils");
 
 const createTask = async (req, res) => {
   const { userId } = req.user;
@@ -42,6 +43,8 @@ const getSingleTask = async (req, res) => {
     throw new NotFound("Task not found", `No task found with ID: ${taskId}`);
   }
 
+  checkPermissions(req.user, task.user)
+
   res.status(StatusCodes.OK).json({
     data: { statusCode: StatusCodes.OK, task },
   });
@@ -58,6 +61,8 @@ const updateTask = async (req, res) => {
   if (!name || !status || startTime === undefined) {
     throw new BadRequest("Missing Fields", "Please fill all fields");
   }
+
+  checkPermissions(req.user, task.user);
 
   const updateData = { task: name, status, startTime };
   await task.update(updateData);
