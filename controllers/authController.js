@@ -14,7 +14,13 @@ const register = async (req, res) => {
 
   res
     .status(StatusCodes.CREATED)
-    .json({ data: { statusCode: StatusCodes.CREATED, user } });
+    .json({
+      data: {
+        statusCode: StatusCodes.CREATED,
+        message: "User created successfully",
+        user,
+      },
+    });
 };
 
 const login = async (req, res) => {
