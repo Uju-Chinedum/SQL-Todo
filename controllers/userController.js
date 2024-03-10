@@ -1,7 +1,7 @@
 const { StatusCodes } = require("http-status-codes");
 const User = require("../models/User");
 const Task = require("../models/Task");
-const { BadRequest, NotFound } = require("../errors");
+const { BadRequest, NotFound, Unauthenticated } = require("../errors");
 const { checkPermissions } = require("../utils");
 
 const getMe = async (req, res) => {
@@ -48,7 +48,36 @@ const updateMe = async (req, res) => {
 };
 
 const updatePassword = async (req, res) => {
-  res.send("Update Password");
+  const { id: userId } = req.params;
+
+  const user = await User.findByPk(userId);
+  if (!user) {
+    throw new NotFound("User not found", `No task found with ID: ${userId}`);
+  }
+
+  const { oldPassword, newPassword } = req.body;
+  if (!oldPassword || !newPassword) {
+    throw new BadRequest("Missing Details", "Please fill all fields");
+  }
+
+  const isPassword = await user.comparePassword(oldPassword);
+  if (!isPassword) {
+    throw new Unauthenticated("Invalid Credentials", "Incorrect password");
+  }
+
+  checkPermissions(req.user, userId);
+
+  const updateData = { password: newPassword };
+  await user.update(updateData);
+  await user.save();
+
+  res.status(StatusCodes.OK).json({
+    data: {
+      statusCode: StatusCodes.OK,
+      message: "Password updated successfully",
+      user,
+    },
+  });
 };
 
 const deleteMe = async (req, res) => {
