@@ -9,9 +9,10 @@ const xss = require("xss-clean");
 const sequelize = require("./db/connect");
 const notFound = require("./middleware/notFound");
 const errorHandler = require("./middleware/errorHandler");
-const auth = require("./middleware/authentication")
+const auth = require("./middleware/authentication");
 const authRouter = require("./routes/authRoutes");
 const taskRouter = require("./routes/taskRoutes");
+const userRouter = require("./routes/userRoutes");
 
 const app = express();
 const port = 5000 || process.env.PORT;
@@ -26,6 +27,7 @@ app.use(morgan("dev"));
 
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/task", auth, taskRouter);
+app.use("/api/v1/user", auth, userRouter);
 
 app.use(notFound);
 app.use(errorHandler);
