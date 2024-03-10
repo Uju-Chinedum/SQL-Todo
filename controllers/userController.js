@@ -20,7 +20,31 @@ const getMe = async (req, res) => {
 };
 
 const updateMe = async (req, res) => {
-  res.send("Update Me");
+  const { id: userId } = req.params;
+
+  const user = await User.findByPk(userId);
+  if (!user) {
+    throw new NotFound("User not found", `No task found with ID: ${userId}`);
+  }
+
+  const { fullName, email } = req.body;
+  if (!fullName || !email) {
+    throw new BadRequest("Missing Fields", "Please fill all fields");
+  }
+
+  checkPermissions(req.user, userId);
+
+  const updateData = { fullName, email };
+  await user.update(updateData);
+  await user.save();
+
+  res.status(StatusCodes.OK).json({
+    data: {
+      statusCode: StatusCodes.OK,
+      message: "User updated successfully",
+      user,
+    },
+  });
 };
 
 const updatePassword = async (req, res) => {
