@@ -43,7 +43,7 @@ const getSingleTask = async (req, res) => {
     throw new NotFound("Task not found", `No task found with ID: ${taskId}`);
   }
 
-  checkPermissions(req.user, task.user)
+  checkPermissions(req.user, task.user);
 
   res.status(StatusCodes.OK).json({
     data: { statusCode: StatusCodes.OK, task },
@@ -52,6 +52,7 @@ const getSingleTask = async (req, res) => {
 
 const updateTask = async (req, res) => {
   const { id: taskId } = req.params;
+
   const task = await Task.findByPk(taskId);
   if (!task) {
     throw new NotFound("Task not found", `No task found with ID: ${taskId}`);
@@ -78,7 +79,28 @@ const updateTask = async (req, res) => {
 };
 
 const deleteTask = async (req, res) => {
-  res.send("Delete Task");
+  const { id: taskId } = req.params;
+
+  const task = await Task.findByPk(taskId);
+  if (!task) {
+    throw new NotFound("Task not found", `No task found with ID: ${taskId}`);
+  }
+
+  checkPermissions(req.user, task.user);
+
+  const user = await User.findByPk(req.user.userId);
+
+  await task.destroy();
+
+  user.update({ noOfTasks: user.noOfTasks - 1 });
+  await user.save();
+
+  res.status(StatusCodes.OK).json({
+    data: {
+      statusCode: StatusCodes.OK,
+      message: "Task deleted successfully",
+    },
+  });
 };
 
 module.exports = {
