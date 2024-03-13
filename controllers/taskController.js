@@ -4,6 +4,8 @@ const Task = require("../models/Task");
 const { NotFound, BadRequest } = require("../errors");
 const { checkPermissions } = require("../utils");
 
+const selection = ["id", "task", "status", "startTime", "user", "updatedAt"];
+
 const createTask = async (req, res) => {
   const { userId } = req.user;
 
@@ -22,13 +24,20 @@ const createTask = async (req, res) => {
     data: {
       statusCode: StatusCodes.CREATED,
       message: "Task created successfully",
-      task,
+      task: {
+        id: task.id,
+        task: task.task,
+        status: task.status,
+        startTime: task.startTime,
+        user: task.user,
+        updatedAt: task.updatedAt,
+      },
     },
   });
 };
 
 const getAllTasks = async (req, res) => {
-  const tasks = await Task.findAll({ where: { user: req.user.userId } });
+  const tasks = await Task.findAll({ where: { user: req.user.userId }, attributes: selection });
 
   res.status(StatusCodes.OK).json({
     data: { statusCode: StatusCodes.OK, tasks, noOfTasks: tasks.length },
@@ -38,7 +47,10 @@ const getAllTasks = async (req, res) => {
 const getSingleTask = async (req, res) => {
   const { id: taskId } = req.params;
 
-  const task = await Task.findByPk(taskId);
+  const task = await Task.findOne({
+    where: { id: taskId },
+    attributes: selection,
+  });
   if (!task) {
     throw new NotFound("Task not found", `No task found with ID: ${taskId}`);
   }
@@ -53,7 +65,10 @@ const getSingleTask = async (req, res) => {
 const updateTask = async (req, res) => {
   const { id: taskId } = req.params;
 
-  const task = await Task.findByPk(taskId);
+  const task = await Task.findOne({
+    where: { id: taskId },
+    attributes: selection,
+  });
   if (!task) {
     throw new NotFound("Task not found", `No task found with ID: ${taskId}`);
   }

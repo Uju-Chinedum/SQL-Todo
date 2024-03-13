@@ -4,10 +4,15 @@ const Task = require("../models/Task");
 const { BadRequest, NotFound, Unauthenticated } = require("../errors");
 const { checkPermissions } = require("../utils");
 
+const selection = ["id", "fullName", "email", "noOfTasks", "updatedAt"];
+
 const getMe = async (req, res) => {
   const { id: userId } = req.params;
 
-  const me = await User.findByPk(userId);
+  const me = await User.findOne({
+    where: { id: userId },
+    attributes: selection,
+  });
   if (!me) {
     throw new NotFound("User Not Found", `No user with ID: ${userId}`);
   }
@@ -22,7 +27,10 @@ const getMe = async (req, res) => {
 const updateMe = async (req, res) => {
   const { id: userId } = req.params;
 
-  const user = await User.findByPk(userId);
+  const user = await User.findOne({
+    where: { id: userId },
+    attributes: selection,
+  });
   if (!user) {
     throw new NotFound("User not found", `No user found with ID: ${userId}`);
   }
@@ -75,7 +83,13 @@ const updatePassword = async (req, res) => {
     data: {
       statusCode: StatusCodes.OK,
       message: "Password updated successfully",
-      user,
+      user: {
+        id: user.id,
+        fullName: user.fullName,
+        email: user.email,
+        noOfTasks: user.noOfTasks,
+        updatedAt: user.updatedAt,
+      },
     },
   });
 };

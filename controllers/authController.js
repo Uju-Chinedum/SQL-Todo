@@ -4,6 +4,8 @@ const User = require("../models/User");
 const { BadRequest, Unauthenticated, Unauthorized } = require("../errors");
 const { addToBlacklist } = require("../middleware/blacklist");
 
+const selection = ["id", "fullName", "email", "noOfTasks", "updatedAt"];
+
 const register = async (req, res) => {
   const { password, confirmPassword } = req.body;
   if (password !== confirmPassword) {
@@ -18,7 +20,13 @@ const register = async (req, res) => {
       data: {
         statusCode: StatusCodes.CREATED,
         message: "User created successfully",
-        user,
+        user: {
+          id: user.id,
+          fullName: user.fullName,
+          email: user.email,
+          noOfTasks: user.noOfTasks,
+          updatedAt: user.updatedAt,
+        },
       },
     });
 };
@@ -32,7 +40,7 @@ const login = async (req, res) => {
     );
   }
 
-  const user = await User.findOne({ where: { email } });
+  const user = await User.findOne({ where: { email }, attributes: selection });
   if (!user || user === null) {
     throw new Unauthenticated(
       "Invalid Credentials",
