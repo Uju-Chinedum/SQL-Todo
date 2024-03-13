@@ -24,7 +24,7 @@ const updateMe = async (req, res) => {
 
   const user = await User.findByPk(userId);
   if (!user) {
-    throw new NotFound("User not found", `No task found with ID: ${userId}`);
+    throw new NotFound("User not found", `No user found with ID: ${userId}`);
   }
 
   const { fullName, email } = req.body;
@@ -52,7 +52,7 @@ const updatePassword = async (req, res) => {
 
   const user = await User.findByPk(userId);
   if (!user) {
-    throw new NotFound("User not found", `No task found with ID: ${userId}`);
+    throw new NotFound("User not found", `No user found with ID: ${userId}`);
   }
 
   const { oldPassword, newPassword } = req.body;
@@ -81,7 +81,24 @@ const updatePassword = async (req, res) => {
 };
 
 const deleteMe = async (req, res) => {
-  res.send("Delete Me");
+  const { id: userId } = req.params;
+
+  const user = await User.findByPk(userId);
+  if (!user) {
+    throw new NotFound("User not found", `No user found with ID: ${userId}`);
+  }
+
+  // Delete all tasks associated with user
+  await Task.destroy({ where: { user: userId } });
+  // Delete user
+  await user.destroy();
+
+  res.status(StatusCodes.OK).json({
+    data: {
+      statusCode: StatusCodes.OK,
+      message: "User deleted successfully",
+    },
+  });
 };
 
 module.exports = { getMe, updateMe, updatePassword, deleteMe };
